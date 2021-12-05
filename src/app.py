@@ -1,31 +1,50 @@
+import jwt
+import os
 from flask import Flask
 from flask_pymongo import PyMongo
 from flask import current_app, g
 from flask_cors import CORS
+from datetime import datetime, timedelta
 
 def create_app(test_config=None):
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        MONGO_URI='mongodb://localhost:27017/gestion-feria'
-    )
+  app = Flask(__name__, instance_relative_config=True)
+  CORS(app)
+  app.config.from_mapping(
+    SECRET_KEY = os.environ.get("SECRET_KEY"),
+    MONGO_URI = os.environ.get("MONGO_URI")
+  )
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
+  from routes import bp
+  app.register_blueprint(bp)
 
-    from routes import bp
-    app.register_blueprint(bp)
-
-    return app
+  return app
 
 def get_db():
   if 'db' not in g:
     g.db = PyMongo(current_app).db
 
   return g.db
+
+def encode_auth_token(user_id):
+  try:
+    payload = {
+      'exp': datetime.utcnow() + timedelta(days=1),
+      'iat': datetime.utcnow(),
+      'sub': user_id
+    }
+    return jwt.encode(
+      payload,
+      current_app.config.get('SECRET_KEY'),
+      algorithm='HS256'
+    )
+  except Exception as e:
+    return e
+    
+def decode_auth_token(auth_token):
+  try:
+    payload = jwt.decode(auth_token, current_app.config.get('SECRET_KEY'))
+    return payload['sub']
+  except jwt.ExpiredSignatureError:
+    return 'Signature expired. Please log in again.'
+  except jwt.InvalidTokenError:
+    return 'Invalid token. Please log in again.'

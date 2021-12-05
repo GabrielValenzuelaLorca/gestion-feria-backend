@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from app import get_db
+from app import get_db, encode_auth_token
 from flask import request
 from werkzeug.security import generate_password_hash
 
@@ -12,6 +12,9 @@ def registerService():
     "password": generate_password_hash(request.json["password"])
   }
   db.user.insert_one(user)
-  user["_id"] = str(ObjectId(user["_id"]))
-  del user['password']
-  return user
+  res = {
+    "auth_token": encode_auth_token(str(ObjectId(user["_id"]))),
+    "email": user["email"],
+    "name": user["name"]
+  }
+  return res
