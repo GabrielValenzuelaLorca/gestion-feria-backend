@@ -1,5 +1,5 @@
 from flask import Blueprint
-from .auth import authRoute
+from .user import userRoute
 
 bp = Blueprint('/', __name__, url_prefix='/')
-bp.register_blueprint(authRoute)
+bp.register_blueprint(userRoute)
