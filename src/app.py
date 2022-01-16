@@ -2,7 +2,7 @@ import jwt
 import os
 from flask import Flask
 from flask_pymongo import PyMongo
-from flask import current_app, g
+from flask import current_app
 from flask_cors import CORS
 from datetime import datetime, timedelta
 
@@ -20,10 +20,7 @@ def create_app(test_config=None):
   return app
 
 def get_db():
-  if 'db' not in g:
-    g.db = PyMongo(current_app).db
-
-  return g.db
+  return PyMongo(current_app).db
 
 def encode_auth_token(user_id):
   try:
