@@ -1,4 +1,3 @@
-from bson.objectid import ObjectId
 from app import encode_auth_token
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -15,7 +14,7 @@ def registerController():
   user = registerService(user)
 
   res = {
-    "auth_token": encode_auth_token(str(ObjectId(user["_id"]))),
+    "auth_token": encode_auth_token(str(user["_id"])),
     "email": user["email"],
     "name": user["name"]
   }
@@ -35,7 +34,7 @@ def loginController():
     
   else:
     res = {
-      "auth_token": encode_auth_token(str(ObjectId(user["_id"]))),
+      "auth_token": encode_auth_token(str(user["_id"])),
       "email": user["email"],
       "name": user["name"]
     }
