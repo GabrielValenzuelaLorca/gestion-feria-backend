@@ -6,3 +6,10 @@ def newActivityService(activity):
   db.activity.insert_one(activity)
 
   return activity
+
+def getActivitiesService():
+  db = get_db()
+
+  activities = db.activity.find().limit(30)
+
+  return activities

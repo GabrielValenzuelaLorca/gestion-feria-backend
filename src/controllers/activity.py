@@ -1,6 +1,7 @@
 from flask import request
 from flask_api import status
-from services.activity import newActivityService
+from bson import json_util
+from services.activity import newActivityService, getActivitiesService
 
 def newActivityController():
   activity = request.json
@@ -11,3 +12,8 @@ def newActivityController():
   del activity['_id']
 
   return activity
+
+def getActivitiesController():
+  activities = json_util.dumps(getActivitiesService())
+
+  return activities
