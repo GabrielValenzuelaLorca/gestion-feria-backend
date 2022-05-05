@@ -2,6 +2,7 @@ from flask import request
 from flask_api import status
 from bson import json_util
 from services.activity import newActivityService, getActivitiesService
+from utils.functions import cleanIds
 
 def newActivityController():
   activity = request.json
@@ -14,6 +15,8 @@ def newActivityController():
   return activity
 
 def getActivitiesController():
-  activities = json_util.dumps(getActivitiesService())
+  activities = list(getActivitiesService())
+  cleanIds(activities)
+  activities = json_util.dumps(activities)
 
   return activities
