@@ -9,7 +9,7 @@ activityRoute = Blueprint('activity', __name__, url_prefix='/activity')
 def create():
   return newActivityController()
 
-@activityRoute.route('/', methods=['GET'])
+@activityRoute.route('', methods=['GET'])
 @token_required
 def get():
   return getActivitiesController()
