@@ -1,7 +1,6 @@
 from flask import request
 from flask_api import status
-from bson import json_util
-from services.activity import newActivityService, getActivitiesService
+from services.activity import editActivityService, newActivityService, getActivitiesService
 from utils.functions import cleanIds
 
 def newActivityController():
@@ -9,14 +8,21 @@ def newActivityController():
 
   activity = newActivityService(activity)
 
-  activity['id'] = str(activity['_id'])
-  del activity['_id']
+  activity['id'] = str(activity.pop('_id'))
 
-  return activity
+  return {"data": activity}
+
+def editActivityController():
+  activity = request.json
+
+  id = activity['id']
+  newActivity = editActivityService(activity)
+  newActivity['id'] = id 
+
+  return {"data": activity}
 
 def getActivitiesController():
   activities = list(getActivitiesService())
   cleanIds(activities)
-  activities = json_util.dumps(activities)
 
-  return activities
+  return {"data": activities}

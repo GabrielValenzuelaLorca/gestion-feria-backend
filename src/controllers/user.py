@@ -19,7 +19,7 @@ def registerController():
     "name": user["name"]
   }
 
-  return res
+  return {"data": res}
 
 def loginController():
   user = loginService({
@@ -38,4 +38,4 @@ def loginController():
       "email": user["email"],
       "name": user["name"]
     }
-    return res
+    return {"data": res}
