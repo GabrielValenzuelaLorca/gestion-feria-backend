@@ -2,7 +2,8 @@ from app import encode_auth_token
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_api import status
-from services.user import loginService, registerService
+from services.user import loginService, registerService, getAllService
+from utils.functions import cleanIds
 
 def registerController():
   user = {
@@ -39,3 +40,9 @@ def loginController():
       "name": user["name"]
     }
     return {"data": res}
+
+def getAllController():
+  users = list(getAllService())
+  cleanIds(users)
+
+  return {"data": users}

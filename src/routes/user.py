@@ -1,5 +1,6 @@
 from flask import Blueprint
-from controllers.user import loginController, registerController
+from controllers.user import loginController, registerController, getAllController
+from wrappers import token_required
 
 userRoute = Blueprint('user', __name__, url_prefix='/user')
 
@@ -10,3 +11,8 @@ def register():
 @userRoute.route('/login', methods=['POST'])
 def login():
   return loginController()
+
+@userRoute.route('/all', methods=['GET'])
+@token_required
+def getAll():
+  return getAllController()

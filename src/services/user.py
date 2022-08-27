@@ -11,3 +11,8 @@ def loginService(user):
   db = get_db()
 
   return db.user.find_one(user)
+
+def getAllService():
+  db = get_db()
+
+  return db.user.find({}, {"password": False})
