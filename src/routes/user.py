@@ -1,5 +1,5 @@
 from flask import Blueprint
-from controllers.user import loginController, registerController, getAllController
+from controllers.user import loginController, registerController, getAllController, updateController
 from wrappers import token_required
 
 userRoute = Blueprint('user', __name__, url_prefix='/user')
@@ -16,3 +16,9 @@ def login():
 @token_required
 def getAll():
   return getAllController()
+
+@userRoute.route('/update', methods=['PUT'])
+@token_required
+def update():
+  print('le entro')
+  return updateController()
