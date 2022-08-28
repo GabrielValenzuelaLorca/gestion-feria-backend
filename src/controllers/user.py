@@ -15,13 +15,10 @@ def registerController():
 
   user = registerService(user)
 
-  res = {
-    "auth_token": encode_auth_token(str(user["_id"])),
-    "email": user["email"],
-    "name": user["name"]
-  }
+  user["auth_token"] = str(user.pop("_id"))
+  del user["password"]
 
-  return {"data": res}
+  return {"data": user}
 
 def loginController():
   user = loginService({
@@ -35,12 +32,10 @@ def loginController():
     return "Contraseña incorrecta", status.HTTP_401_UNAUTHORIZED
     
   else:
-    res = {
-      "auth_token": encode_auth_token(str(user["_id"])),
-      "email": user["email"],
-      "name": user["name"]
-    }
-    return {"data": res}
+    user["auth_token"] = encode_auth_token(str(user.pop("_id")))
+    del user["password"]
+    
+    return {"data": user}
 
 def getAllController():
   users = list(getAllService())
