@@ -10,12 +10,12 @@ def registerController():
     "email": request.json["email"],
     "name": request.json["name"],
     "password": generate_password_hash(request.json["password"]),
-    "rol": "Alumno "
+    "rol": "Alumno"
   }
 
   user = registerService(user)
 
-  user["auth_token"] = str(user.pop("_id"))
+  user["auth_token"] = encode_auth_token(str(user.pop("_id")))
   del user["password"]
 
   return {"data": user}
@@ -34,7 +34,7 @@ def loginController():
   else:
     user["auth_token"] = encode_auth_token(str(user.pop("_id")))
     del user["password"]
-    
+
     return {"data": user}
 
 def getAllController():
