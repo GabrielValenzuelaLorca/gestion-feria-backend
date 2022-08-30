@@ -10,12 +10,15 @@ def registerController():
     "email": request.json["email"],
     "name": request.json["name"],
     "password": generate_password_hash(request.json["password"]),
-    "rol": "Alumno"
+    "rol": "Alumno",
+    "team": {}
   }
 
   user = registerService(user)
 
-  user["auth_token"] = encode_auth_token(str(user.pop("_id")))
+  id = str(user.pop("_id"))
+  user["auth_token"] = encode_auth_token(id)
+  user["id"] = id
   del user["password"]
 
   return {"data": user}
@@ -32,13 +35,21 @@ def loginController():
     return "Contraseña incorrecta", status.HTTP_401_UNAUTHORIZED
     
   else:
-    user["auth_token"] = encode_auth_token(str(user.pop("_id")))
+    id = str(user.pop("_id"))
+    user["auth_token"] = encode_auth_token(id)
+    user["id"] = id
     del user["password"]
 
     return {"data": user}
 
 def getAllController():
-  users = list(getAllService())
+  query = {}
+  rol = request.args.get('rol')
+
+  if rol is not None:
+    query["rol"] = rol
+
+  users = list(getAllService(query))
   cleanIds(users)
 
   return {"data": users}

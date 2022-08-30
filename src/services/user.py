@@ -13,10 +13,10 @@ def loginService(user):
 
   return db.user.find_one(user)
 
-def getAllService():
+def getAllService(query):
   db = get_db()
 
-  return db.user.find({}, {"password": False})
+  return db.user.find(query, {"password": False})
 
 def updateService(user):
   db = get_db()
@@ -25,3 +25,16 @@ def updateService(user):
   db.user.update({"_id": id}, {"$set": user})
 
   return user
+
+def updateManyService(users, data):
+  db = get_db()
+
+  db.user.update_many({
+    "_id": {
+      "$in": users
+    }
+  }, {
+    "$set": data
+  })
+
+  return users
