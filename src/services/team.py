@@ -1,8 +1,6 @@
 from app import get_db
-from bson.objectid import ObjectId
-from utils.functions import cleanIds
 
-def createService(team):
+def createTeamService(team):
   db = get_db()
 
   db.team.insert_one(team)
