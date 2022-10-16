@@ -11,7 +11,8 @@ def registerController():
     "name": request.json["name"],
     "password": generate_password_hash(request.json["password"]),
     "rol": "Alumno",
-    "team": {}
+    "team": {},
+    "project": {}
   }
 
   user = registerService(user)
