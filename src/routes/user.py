@@ -20,5 +20,4 @@ def getAll():
 @userRoute.route('/update', methods=['PUT'])
 @token_required
 def update():
-  print('le entro')
   return updateController()
