@@ -1,6 +1,6 @@
 from flask import request, g
 from services.project import createProjectService
-from services.team import createTeamService, updateTeamService, getTeamService
+from services.team import createTeamService, updateTeamService, getTeamByIdService
 from services.user import getAllService, updateManyService
 from bson.objectid import ObjectId
 
@@ -39,12 +39,11 @@ def createController():
 
 def updateController():
     team = request.json
-    oldMembers = set(getTeamService(ObjectId(team["id"])).pop("members"))
+    oldTeam = getTeamByIdService(ObjectId(team["id"]))
+    oldMembers = set(oldTeam.pop("members"))
     newMembers = team["members"]
     deleteMembers = list(oldMembers - set(newMembers))
-
-    if "project" in team:
-        team.pop("project")
+    team["project"] = oldTeam["project"]
 
     team = updateTeamService(team)
 

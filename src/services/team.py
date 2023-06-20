@@ -2,10 +2,16 @@ from app import get_db
 from bson.objectid import ObjectId
 
 
-def getTeamService(id):
+def getTeamByIdService(id):
     db = get_db()
 
     return db.team.find_one({"_id": id})
+
+
+def getTeamService(query):
+    db = get_db()
+
+    return db.team.find_one(query)
 
 
 def createTeamService(team):
