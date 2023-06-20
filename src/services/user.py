@@ -2,7 +2,7 @@ from app import get_db
 from bson.objectid import ObjectId
 
 
-def registerService(user):
+def registerUserService(user):
     db = get_db()
 
     db.user.insert_one(user)
@@ -16,13 +16,19 @@ def loginService(user):
     return db.user.find_one(user)
 
 
-def getAllService(query):
+def getUserByIdService(id):
+    db = get_db()
+
+    return db.user.find_one(ObjectId(id), {"password": False})
+
+
+def getAllUsersService(query):
     db = get_db()
 
     return db.user.find(query, {"password": False})
 
 
-def updateService(user):
+def updateUserService(user):
     db = get_db()
 
     id = ObjectId(user.pop("id"))
@@ -31,8 +37,10 @@ def updateService(user):
     return user
 
 
-def updateManyService(users, data):
+def updateManyUsersService(users, data):
     db = get_db()
+
+    users = list(map(lambda userId: ObjectId(userId), users))
 
     db.user.update_many({"_id": {"$in": users}}, {"$set": data})
 

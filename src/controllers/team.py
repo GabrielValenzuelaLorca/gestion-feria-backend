@@ -1,8 +1,7 @@
 from flask import request, g
 from services.project import createProjectService
 from services.team import createTeamService, updateTeamService, getTeamByIdService
-from services.user import getAllService, updateManyService
-from bson.objectid import ObjectId
+from services.user import getUserByIdService, updateManyUsersService
 
 
 def createController():
@@ -26,12 +25,9 @@ def createController():
     team = createTeamService(team)
     team["id"] = str(team.pop("_id"))
 
-    members = list(map(lambda user: ObjectId(user), team["members"]))
+    updateManyUsersService(team["members"], {"team": team})
 
-    updateManyService(members, {"team": team})
-
-    user = list(getAllService({"_id": g.user["_id"]}))[0]
-
+    user = getUserByIdService(g.user["_id"])
     user["id"] = str(user.pop("_id"))
 
     return {"data": user}
@@ -39,7 +35,7 @@ def createController():
 
 def updateController():
     team = request.json
-    oldTeam = getTeamByIdService(ObjectId(team["id"]))
+    oldTeam = getTeamByIdService(team["id"])
     oldMembers = set(oldTeam.pop("members"))
     newMembers = team["members"]
     deleteMembers = list(oldMembers - set(newMembers))
@@ -47,14 +43,10 @@ def updateController():
 
     team = updateTeamService(team)
 
-    newMembers = list(map(lambda user: ObjectId(user), newMembers))
-    deleteMembers = list(map(lambda user: ObjectId(user), deleteMembers))
+    updateManyUsersService(newMembers, {"team": team})
+    updateManyUsersService(deleteMembers, {"team": {}})
 
-    updateManyService(newMembers, {"team": team})
-    updateManyService(deleteMembers, {"team": {}})
-
-    user = list(getAllService({"_id": g.user["_id"]}))[0]
-
+    user = getUserByIdService(g.user["_id"])
     user["id"] = str(user.pop("_id"))
 
     return {"data": user}

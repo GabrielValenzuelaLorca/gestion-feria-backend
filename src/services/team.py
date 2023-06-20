@@ -5,7 +5,7 @@ from bson.objectid import ObjectId
 def getTeamByIdService(id):
     db = get_db()
 
-    return db.team.find_one({"_id": id})
+    return db.team.find_one({"_id": ObjectId(id)})
 
 
 def getTeamService(query):
