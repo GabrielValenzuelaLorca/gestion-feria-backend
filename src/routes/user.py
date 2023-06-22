@@ -2,7 +2,6 @@ from flask import Blueprint
 from controllers.user import (
     loginController,
     registerController,
-    getByIdController,
     getAllController,
     updateController,
 )

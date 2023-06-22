@@ -6,11 +6,12 @@ from services.user import updateManyUsersService, getUserByIdService
 
 def updateProjectController():
     project = request.json
-    team = getTeamService({"project.id": project["id"]})
-    membersIds = team.pop("members")
-
     project = updateProjectService(project)
+
+    team = getTeamService({"project.id": project["id"]})
+    membersIds = team["members"]
     team["project"] = project
+    team["id"] = team.pop("_id")
     team = updateTeamService(team)
 
     updateManyUsersService(membersIds, {"team": team})
