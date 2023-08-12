@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 
 def newActivityService(activity):
   db = get_db()
-  activity["cierre"] = activity["cierre"] != '' or None
+  activity["close"] = activity["close"] != '' or None
 
   db.activity.insert_one(activity)
 
