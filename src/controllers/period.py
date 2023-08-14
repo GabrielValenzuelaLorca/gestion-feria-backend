@@ -1,20 +1,20 @@
 from flask import request
-from services.period import findActiveService, createService, updateService
+from services.period import findActivePeriodService, createPeriodService, updatePeriodService
 
 
-def createController():
+def createPeriodController():
     period = {
         "year": request.json["year"],
         "start": request.json["start"],
         "active": True,
     }
 
-    activePeriod = findActiveService()
+    activePeriod = findActivePeriodService()
 
     if activePeriod is not None:
         activePeriod["active"] = False
-        updateService(activePeriod)
+        updatePeriodService(activePeriod)
 
-    period = createService(period)
+    period = createPeriodService(period)
 
     return {"data": period}

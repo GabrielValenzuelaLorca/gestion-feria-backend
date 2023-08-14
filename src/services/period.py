@@ -2,7 +2,7 @@ from app import get_db
 from bson.objectid import ObjectId
 
 
-def createService(period):
+def createPeriodService(period):
     db = get_db()
 
     db.period.insert_one(period)
@@ -12,7 +12,7 @@ def createService(period):
     return period
 
 
-def findActiveService():
+def findActivePeriodService():
     db = get_db()
 
     period = db.period.find_one({"active": True})
@@ -23,7 +23,7 @@ def findActiveService():
     return period
 
 
-def updateService(period):
+def updatePeriodService(period):
     db = get_db()
 
     id = ObjectId(period.pop("id"))

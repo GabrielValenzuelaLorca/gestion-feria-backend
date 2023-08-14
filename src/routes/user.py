@@ -1,5 +1,6 @@
 from flask import Blueprint
 from controllers.user import (
+    getUserController,
     loginController,
     registerController,
     getAllController,
@@ -18,6 +19,10 @@ def register():
 @userRoute.route("/login", methods=["POST"])
 def login():
     return loginController()
+
+@userRoute.route("/<id>", methods=["GET"])
+def getUser(id):
+    return getUserController(id)
 
 
 @userRoute.route("/all", methods=["GET"])

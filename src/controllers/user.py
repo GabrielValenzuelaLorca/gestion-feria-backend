@@ -2,7 +2,9 @@ from app import encode_auth_token
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_api import status
+from services.period import findActivePeriodService
 from services.user import (
+    getUserByIdService,
     loginService,
     registerUserService,
     getAllUsersService,
@@ -12,12 +14,16 @@ from utils.functions import cleanIds
 
 
 def registerController():
+    activePeriod = findActivePeriodService()
+    if activePeriod is None:
+        return "No existe periodo activo", status.HTTP_500_INTERNAL_SERVER_ERROR
     user = {
         "email": request.json["email"],
         "name": request.json["name"],
         "password": generate_password_hash(request.json["password"]),
         "rol": "Alumno",
         "team": {},
+        "period": activePeriod
     }
 
     user = registerUserService(user)
@@ -46,14 +52,25 @@ def loginController():
         del user["password"]
 
         return {"data": user}
-
+    
+def getUserController(id):
+    try:
+        user = getUserByIdService(id)
+        user["auth_token"] = encode_auth_token(id)
+        return {"data": user}
+    except RuntimeError as e:
+        return "Usuario no encontrado", status.HTTP_404_NOT_FOUND
 
 def getAllController():
     query = {}
     rol = request.args.get("rol")
+    active = request.args.get("active")
 
     if rol is not None:
         query["rol"] = rol
+
+    if active:
+        query["period.active"] = True
 
     users = list(getAllUsersService(query))
     cleanIds(users)

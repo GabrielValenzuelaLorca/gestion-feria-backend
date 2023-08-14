@@ -17,6 +17,5 @@ def updateProjectController():
     updateManyUsersService(membersIds, {"team": team})
 
     user = getUserByIdService(g.user["_id"])
-    user["id"] = str(user.pop("_id"))
 
     return {"data": user}

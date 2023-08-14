@@ -18,8 +18,11 @@ def loginService(user):
 
 def getUserByIdService(id):
     db = get_db()
-
-    return db.user.find_one(ObjectId(id), {"password": False})
+    user = db.user.find_one(ObjectId(id), {"password": False})
+    if user is None:
+        raise RuntimeError
+    user["id"] = str(user.pop("_id"))
+    return user
 
 
 def getAllUsersService(query):
