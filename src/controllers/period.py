@@ -18,3 +18,10 @@ def createPeriodController():
     period = createPeriodService(period)
 
     return {"data": period}
+
+def getActivePeriodController():
+    activePeriod = findActivePeriodService()
+
+    return {
+        "data": activePeriod
+    }

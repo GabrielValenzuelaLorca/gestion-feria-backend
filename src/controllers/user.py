@@ -23,7 +23,7 @@ def registerController():
         "password": generate_password_hash(request.json["password"]),
         "rol": "Alumno",
         "team": {},
-        "period": activePeriod
+        "period": activePeriod["id"]
     }
 
     user = registerUserService(user)
@@ -62,6 +62,7 @@ def getUserController(id):
         return "Usuario no encontrado", status.HTTP_404_NOT_FOUND
 
 def getAllController():
+    activePeriod = findActivePeriodService()
     query = {}
     rol = request.args.get("rol")
     active = request.args.get("active")
@@ -70,7 +71,7 @@ def getAllController():
         query["rol"] = rol
 
     if active:
-        query["period.active"] = True
+        query["period"] = activePeriod["id"]
 
     users = list(getAllUsersService(query))
     cleanIds(users)

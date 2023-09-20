@@ -28,7 +28,7 @@ def createController():
     team = request.json
     team["linkedin"] = None
     team["project"] = project
-    team["period"] = activePeriod
+    team["period"] = activePeriod["id"]
 
     team = createTeamService(team)
     team["id"] = str(team.pop("_id"))
