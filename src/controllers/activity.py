@@ -2,7 +2,6 @@ from flask import request
 from flask_api import status
 from services.activity import editActivityService, newActivityService, getActivitiesService
 from services.period import findActivePeriodService
-from utils.functions import cleanIds
 
 def newActivityController():
   activity = request.json
@@ -11,23 +10,18 @@ def newActivityController():
   if activePeriod is None:
       return "No existe periodo activo", status.HTTP_500_INTERNAL_SERVER_ERROR
   
-  activity["period"]=activePeriod
+  activity["period"] = activePeriod["id"]
   activity = newActivityService(activity)
-  activity['id'] = str(activity.pop('_id'))
 
   return {"data": activity}
 
 def editActivityController():
   activity = request.json
-
-  id = activity['id']
-  newActivity = editActivityService(activity)
-  newActivity['id'] = id 
+  activity = editActivityService(activity)
 
   return {"data": activity}
 
 def getActivitiesController():
-  activities = list(getActivitiesService())
-  cleanIds(activities)
+  activities = getActivitiesService()
 
   return {"data": activities}
