@@ -26,3 +26,20 @@ def getActivitiesService():
   cleanIds(activities)
 
   return activities
+
+def getPendingActivities(deliverable_ids):
+  db = get_db()
+  deliverable_ids = list(map(lambda x: ObjectId(x), deliverable_ids))
+  activePeriod = findActivePeriodService()
+  activities = list(db.activity.find({
+    "_id": {
+      "$nin": deliverable_ids
+    },
+    "period": activePeriod["id"],
+    "type": {
+      "$ne": "Presentación"
+    }
+  }))
+  cleanIds(activities)
+
+  return activities
