@@ -1,20 +1,17 @@
 from flask import Blueprint
-from controllers.deliverable import getDeliverablesByTeamController
+from controllers.deliverable import (
+    getDeliverablesByTeamController,
+    newDeliverableController,
+)
 from wrappers import token_required
 
 deliverableRoute = Blueprint("deliverable", __name__, url_prefix="/deliverable")
 
 
-# @activityRoute.route("/create", methods=["POST"])
-# @token_required
-# def create():
-#     return newActivityController()
-
-
-# @activityRoute.route("/edit", methods=["PUT"])
-# @token_required
-# def edit():
-#     return editActivityController()
+@deliverableRoute.route("/create/<activity_id>", methods=["POST"])
+@token_required
+def create(activity_id):
+    return newDeliverableController(activity_id)
 
 
 @deliverableRoute.route("/<team_id>", methods=["GET"])

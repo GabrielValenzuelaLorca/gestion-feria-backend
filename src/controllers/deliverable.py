@@ -1,57 +1,81 @@
-import datetime
-from flask import request
+from datetime import datetime
+from pytz import timezone
+from flask import g
 from flask_api import status
-from services.period import findActivePeriodService
-from services.deliverable import getDeliverablesByTeamService
-from services.activity import getPendingActivities
+from services.deliverable import getDeliverablesByTeamService, newDeliverableService
+from services.activity import getActivityService, getPendingActivities
 
-# def newActivityController():
-#   activity = request.json
-#   activePeriod = findActivePeriodService()
+tz = timezone("America/Santiago")
+format = "%Y/%m/%dT%H:%M"
 
-#   if activePeriod is None:
-#       return "No existe periodo activo", status.HTTP_500_INTERNAL_SERVER_ERROR
-  
-#   activity["period"] = activePeriod["id"]
-#   activity = newActivityService(activity)
 
-#   return {"data": activity}
+def getDateTime(date):
+    return tz.localize(datetime.strptime(date + "T23:59", format))
 
-# def editActivityController():
-#   activity = request.json
-#   activity = editActivityService(activity)
 
-#   return {"data": activity}
-
-def getDeliverablesByTeamController(team_id):
-  currentDate = datetime.datetime.now()
-  def activityParser(activity):
-    format = "%Y-%m-%dT%H:%M"
-    endDate = datetime.datetime.strptime(activity["end"] + "T23:59", format)
+def newDeliverableController(activity_id):
+    currentDate = datetime.now(tz)
+    activity = getActivityService(activity_id)
+    endDate = getDateTime(activity["end"])
+    deliverable = {
+        "activity": activity,
+        "date": datetime.strftime(currentDate, format + ".%z"),
+        "team": g.user["team"]["id"],
+    }
 
     if currentDate > endDate:
-      if activity["delay"]: 
-        closeDate = datetime.datetime.strptime(activity["close"] + "T23:59", format)
-        state = "closed" if currentDate > closeDate else "pending_delayed"
-      else:
-        state = "closed"
+        if activity["delay"] and currentDate < getDateTime(activity["close"]):
+            state = "done_delayed"
+        else:
+            return "Envío cerrado", status.HTTP_500_INTERNAL_SERVER_ERROR
     else:
-      state = "pending"
-      
-    return {**activity, "state": state, "send_date": None}
-    
-  deliverables = getDeliverablesByTeamService(team_id)
-  deliverableIds = list(map(lambda x: x["activity"]["id"], deliverables))
+        state = "done"
 
-  activities = getPendingActivities(deliverableIds)
+    deliverable["state"] = state
+    deliverable = newDeliverableService(deliverable)
 
-  deliverablesAsActivities = list(map(lambda x: {**x["activity"], "state": x["state"], "send_date": x["date"]}, deliverables))
-  deliverablesAsActivities.sort(key=lambda x: x["end"])
+    return {"data": deliverable}
 
-  activities = list(map(activityParser, activities))
-  closedActivities = list(filter(lambda x: x["state"] == "closed", activities))
-  closedActivities.sort(key=lambda x: x["end"])
-  pendingActivities = list(filter(lambda x: x["state"] == "pending", activities))
-  pendingActivities.sort(key=lambda x: x["end"])
 
-  return {"data": pendingActivities + deliverablesAsActivities + closedActivities}
+def getDeliverablesByTeamController(team_id):
+    currentDate = datetime.now(tz)
+
+    def activityParser(activity):
+        endDate = getDateTime(activity["end"])
+
+        if currentDate > endDate:
+            if activity["delay"] and currentDate < getDateTime(activity["close"]):
+                state = "pending_delayed"
+            else:
+                state = "closed"
+        else:
+            state = "pending"
+
+        return {**activity, "state": state, "send_date": None, "deliverable_id": None}
+
+    deliverables = getDeliverablesByTeamService(team_id)
+
+    deliverableIds = list(map(lambda x: x["activity"]["id"], deliverables))
+
+    activities = getPendingActivities(deliverableIds)
+
+    deliverablesAsActivities = list(
+        map(
+            lambda x: {
+                "deliverable_id": x["id"],
+                **x["activity"],
+                "state": x["state"],
+                "send_date": x["date"],
+            },
+            deliverables,
+        )
+    )
+    deliverablesAsActivities.sort(key=lambda x: x["end"])
+
+    activities = list(map(activityParser, activities))
+    closedActivities = list(filter(lambda x: x["state"] == "closed", activities))
+    closedActivities.sort(key=lambda x: x["end"])
+    pendingActivities = list(filter(lambda x: x["state"] == "pending", activities))
+    pendingActivities.sort(key=lambda x: x["end"])
+
+    return {"data": pendingActivities + deliverablesAsActivities + closedActivities}
