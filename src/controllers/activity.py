@@ -17,6 +17,7 @@ def newActivityController():
         return "No existe periodo activo", status.HTTP_500_INTERNAL_SERVER_ERROR
 
     activity["period"] = activePeriod["id"]
+    activity["rubric"] = None
     activity = newActivityService(activity)
 
     return {"data": activity}
