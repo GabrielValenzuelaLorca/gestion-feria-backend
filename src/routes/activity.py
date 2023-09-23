@@ -1,5 +1,6 @@
 from flask import Blueprint
 from controllers.activity import (
+    getActivityController,
     newActivityController,
     editActivityController,
     getActivitiesController,
@@ -25,3 +26,9 @@ def edit():
 @token_required
 def get():
     return getActivitiesController()
+
+
+@activityRoute.route("/<activity_id>", methods=["GET"])
+@token_required
+def getActivity(activity_id):
+    return getActivityController(activity_id)
