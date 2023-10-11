@@ -1,6 +1,9 @@
 from app import get_db
 from bson.objectid import ObjectId
 
+from services.period import findActivePeriodService
+from utils.functions import cleanIds
+
 
 def getTeamByIdService(id):
     db = get_db()
@@ -32,3 +35,20 @@ def updateTeamService(team):
     team["id"] = str(id)
 
     return team
+
+
+def getNotEvaluatedTeamsService(evaluation_ids):
+    db = get_db()
+    evaluation_ids = list(map(lambda x: ObjectId(x), evaluation_ids))
+    activePeriod = findActivePeriodService()
+    teams = list(
+        db.team.find(
+            {
+                "_id": {"$nin": evaluation_ids},
+                "period": activePeriod["id"],
+            }
+        )
+    )
+    cleanIds(teams)
+
+    return teams

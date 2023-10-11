@@ -39,14 +39,6 @@ def getActivitiesService():
     return activities
 
 
-def getActivityService(activity_id):
-    db = get_db()
-    activity = db.activity.find_one(ObjectId(activity_id))
-    activity["id"] = str(activity.pop("_id"))
-
-    return activity
-
-
 def getPendingActivities(deliverable_ids):
     db = get_db()
     deliverable_ids = list(map(lambda x: ObjectId(x), deliverable_ids))
