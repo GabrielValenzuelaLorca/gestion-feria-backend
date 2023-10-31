@@ -1,5 +1,6 @@
 from flask import Blueprint
 from controllers.deliverable import (
+    getDeliverablesByActivity,
     getDeliverablesByTeamController,
     newDeliverableController,
 )
@@ -18,3 +19,9 @@ def create(activity_id):
 @token_required
 def get(team_id):
     return getDeliverablesByTeamController(team_id)
+
+
+@deliverableRoute.route("/getByActivity/<activity_id>", methods=["GET"])
+@token_required
+def getByActivity(activity_id):
+    return getDeliverablesByActivity(activity_id)

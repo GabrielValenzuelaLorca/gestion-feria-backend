@@ -6,7 +6,6 @@ from .project import projectRoute
 from .period import periodRoute
 from .deliverable import deliverableRoute
 from .rubric import rubricRoute
-from .evaluation import evaluationRoute
 
 bp = Blueprint("/", __name__, url_prefix="/")
 bp.register_blueprint(userRoute)
@@ -16,4 +15,3 @@ bp.register_blueprint(projectRoute)
 bp.register_blueprint(periodRoute)
 bp.register_blueprint(deliverableRoute)
 bp.register_blueprint(rubricRoute)
-bp.register_blueprint(evaluationRoute)

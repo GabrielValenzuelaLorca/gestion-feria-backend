@@ -8,7 +8,10 @@ from utils.functions import cleanIds
 def getTeamByIdService(id):
     db = get_db()
 
-    return db.team.find_one({"_id": ObjectId(id)})
+    team = db.team.find_one({"_id": ObjectId(id)})
+    team["id"] = str(team.pop("_id"))
+
+    return team
 
 
 def getTeamService(query):
@@ -37,14 +40,14 @@ def updateTeamService(team):
     return team
 
 
-def getNotEvaluatedTeamsService(evaluation_ids):
+def getNotEvaluatedTeamsService(team_ids):
     db = get_db()
-    evaluation_ids = list(map(lambda x: ObjectId(x), evaluation_ids))
+    team_ids = list(map(lambda x: ObjectId(x), team_ids))
     activePeriod = findActivePeriodService()
     teams = list(
         db.team.find(
             {
-                "_id": {"$nin": evaluation_ids},
+                "_id": {"$nin": team_ids},
                 "period": activePeriod["id"],
             }
         )
