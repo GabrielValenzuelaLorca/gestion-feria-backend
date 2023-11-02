@@ -1,8 +1,10 @@
 from datetime import datetime
 from pytz import timezone
-from flask import g
+from flask import g, request
 from flask_api import status
 from services.deliverable import (
+    evaluateService,
+    getDeliverableByIdService,
     getDeliverablesByActivityService,
     getDeliverablesByTeamService,
     newDeliverableService,
@@ -39,6 +41,11 @@ def newDeliverableController(activity_id):
     deliverable["state"] = state
     deliverable = newDeliverableService(deliverable)
 
+    return {"data": deliverable}
+
+
+def getDeliverableByIdController(deliverable_id):
+    deliverable = getDeliverableByIdService(deliverable_id)
     return {"data": deliverable}
 
 
@@ -127,3 +134,10 @@ def getDeliverablesByActivity(activity_id):
     allTeams.sort(key=lambda x: x["team"]["name"])
 
     return {"data": {"activity": activity, "deliverables": allTeams}}
+
+
+def evaluateController(deliverable_id):
+    evaluation = request.json
+    evaluateService(deliverable_id, evaluation)
+
+    return {"data": evaluation}

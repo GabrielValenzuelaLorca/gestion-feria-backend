@@ -12,6 +12,13 @@ def newDeliverableService(deliverable):
     return deliverable
 
 
+def updateDeliverablesService(query, deliverable):
+    db = get_db()
+
+    db.deliverable.update_many(query, {"$set": deliverable})
+    return deliverable
+
+
 def getDeliverablesByTeamService(team_id):
     db = get_db()
 
@@ -28,3 +35,23 @@ def getDeliverablesByActivityService(activity_id):
     cleanIds(deliverables)
 
     return deliverables
+
+
+def getDeliverableByIdService(deliverable_id):
+    db = get_db()
+
+    deliverable = db.deliverable.find_one(ObjectId(deliverable_id))
+    deliverable["id"] = str(deliverable.pop("_id"))
+
+    return deliverable
+
+
+def evaluateService(deliverable_id, evaluation):
+    db = get_db()
+
+    db.deliverable.update_one(
+        {"_id": ObjectId(deliverable_id)},
+        {"$set": {"evaluation": evaluation, "state": "evaluated"}},
+    )
+
+    return evaluation

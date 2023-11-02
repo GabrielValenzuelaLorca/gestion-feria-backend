@@ -1,5 +1,7 @@
 from flask import Blueprint
 from controllers.deliverable import (
+    evaluateController,
+    getDeliverableByIdController,
     getDeliverablesByActivity,
     getDeliverablesByTeamController,
     newDeliverableController,
@@ -15,9 +17,9 @@ def create(activity_id):
     return newDeliverableController(activity_id)
 
 
-@deliverableRoute.route("/<team_id>", methods=["GET"])
+@deliverableRoute.route("/getByTeamId/<team_id>", methods=["GET"])
 @token_required
-def get(team_id):
+def getByTeamId(team_id):
     return getDeliverablesByTeamController(team_id)
 
 
@@ -25,3 +27,15 @@ def get(team_id):
 @token_required
 def getByActivity(activity_id):
     return getDeliverablesByActivity(activity_id)
+
+
+@deliverableRoute.route("/<deliverable_id>", methods=["GET"])
+@token_required
+def get(deliverable_id):
+    return getDeliverableByIdController(deliverable_id)
+
+
+@deliverableRoute.route("/evaluate/<deliverable_id>", methods=["POST"])
+@token_required
+def evaluate(deliverable_id):
+    return evaluateController(deliverable_id)

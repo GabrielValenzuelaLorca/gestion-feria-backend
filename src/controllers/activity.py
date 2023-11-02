@@ -33,6 +33,8 @@ def editActivityController():
 def getActivitiesController():
     activities = getActivitiesService()
 
+    activities.sort(key=lambda x: x["end"], reverse=True)
+
     return {"data": activities}
 
 
