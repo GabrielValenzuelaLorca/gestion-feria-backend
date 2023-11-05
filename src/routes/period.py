@@ -10,7 +10,7 @@ periodRoute = Blueprint("period", __name__, url_prefix="/period")
 def create():
     return createPeriodController()
 
+
 @periodRoute.route("/active", methods=["GET"])
-@token_required
 def getActive():
     return getActivePeriodController()
