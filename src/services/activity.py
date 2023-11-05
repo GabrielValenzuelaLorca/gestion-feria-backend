@@ -55,3 +55,26 @@ def getPendingActivities(deliverable_ids):
     cleanIds(activities)
 
     return activities
+
+
+def getAppActivitiesService():
+    db = get_db()
+    activePeriod = findActivePeriodService()
+    activities = list(
+        db.activity.find(
+            {
+                "period": activePeriod["id"],
+                "type": {
+                    "$in": [
+                        "storyCreation",
+                        "storyEdition",
+                        "storyAssignation",
+                        "sprint",
+                    ]
+                },
+            }
+        )
+    )
+    cleanIds(activities)
+
+    return activities

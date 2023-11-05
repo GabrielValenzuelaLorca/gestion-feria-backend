@@ -3,6 +3,7 @@ from flask_api import status
 from services.activity import (
     editActivityService,
     getActivityService,
+    getAppActivitiesService,
     newActivityService,
     getActivitiesService,
 )
@@ -42,3 +43,9 @@ def getActivityController(activity_id):
     activity = getActivityService(activity_id)
 
     return {"data": activity}
+
+
+def getAppActivitiesController():
+    activities = getAppActivitiesService()
+
+    return {"data": activities}
