@@ -1,7 +1,11 @@
 from flask import request
 from flask_api import status
-
-from services.story import createStoryService, findHigherIndex
+from services.story import (
+    createStoryService,
+    findHigherIndex,
+    getStoriesBySprintService,
+    updateStoriesService,
+)
 
 
 def errorMessage(field):
@@ -22,16 +26,43 @@ def createStoryController():
     newStory = {
         **story,
         "number": int(story["number"]),
-        "state": "to do",
+        "state": "Por Hacer",
         "progress": 0,
         "points": 0,
-        "criticality": "optional",
-        "sprint": "backlog",
+        "criticality": "Opcional",
+        "sprint": "Backlog",
         "criteria": "",
         "responsables": [],
-        "index": findHigherIndex("backlog", "to do", story["team_id"]) + 1,
+        "index": findHigherIndex("Backlog", "Por Hacer", story["team_id"]) + 1,
     }
 
     newStory = createStoryService(newStory)
 
     return {"data": newStory}
+
+
+def getStoriesBySprintController():
+    teamId = request.args.get("teamId")
+    sprint = request.args.get("sprint")
+
+    if teamId is None:
+        return errorMessage("teamId")
+    if sprint is None:
+        return errorMessage("sprint")
+
+    stories = getStoriesBySprintService(teamId, sprint)
+
+    return {"data": stories}
+
+
+def updateStateController():
+    params = request.json
+    if "sourceStories" not in params:
+        return errorMessage("sourceStories")
+    if "destStories" not in params:
+        return errorMessage("destStories")
+    if "story" not in params:
+        return errorMessage("story")
+
+    updateStoriesService(params)
+    return {"data": params}

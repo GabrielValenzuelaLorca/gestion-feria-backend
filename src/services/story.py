@@ -1,6 +1,8 @@
 from app import get_db
 from bson.objectid import ObjectId
 
+from utils.functions import cleanIds
+
 
 def createStoryService(story):
     db = get_db()
@@ -21,6 +23,39 @@ def findHigherIndex(sprint, state, team_id):
         .sort("index", -1)
         .limit(1)
     )
-    print("index", index)
 
     return -1 if len(index) == 0 else index.pop()["index"]
+
+
+def getStoriesBySprintService(teamId, sprint):
+    db = get_db()
+
+    stories = list(db.story.find({"team_id": teamId, "sprint": sprint}))
+    cleanIds(stories)
+
+    return stories
+
+
+def updateStoriesService(params):
+    db = get_db()
+
+    params["sourceStories"] = list(map(lambda x: ObjectId(x), params["sourceStories"]))
+    params["destStories"] = list(map(lambda x: ObjectId(x), params["destStories"]))
+
+    db.story.update_many(
+        {"_id": {"$in": params["sourceStories"]}},
+        {"$inc": {"index": -1}},
+    )
+    db.story.update_many(
+        {"_id": {"$in": params["destStories"]}},
+        {"$inc": {"index": 1}},
+    )
+    db.story.update_one(
+        {"_id": ObjectId(params["story"]["id"])},
+        {
+            "$set": {
+                "state": params["story"]["state"],
+                "index": params["story"]["index"],
+            }
+        },
+    )
