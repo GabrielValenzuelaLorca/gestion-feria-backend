@@ -5,6 +5,7 @@ from services.story import (
     findHigherIndex,
     getStoriesBySprintService,
     updateStoriesService,
+    updateStoryService,
 )
 
 
@@ -66,3 +67,25 @@ def updateStateController():
 
     updateStoriesService(params)
     return {"data": params}
+
+
+def updateStoryController(storyId):
+    story = request.json
+    if "team_id" not in story:
+        return errorMessage("team_id")
+    if "number" not in story:
+        return errorMessage("number")
+    if "title" not in story:
+        return errorMessage("title")
+    if "description" not in story:
+        return errorMessage("description")
+    if "progress" not in story:
+        return errorMessage("progress")
+    if "points" not in story:
+        return errorMessage("points")
+    if "criticality" not in story:
+        return errorMessage("criticality")
+
+    updateStoryService(storyId, story)
+
+    return {"data": story}

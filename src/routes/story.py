@@ -3,6 +3,7 @@ from controllers.story import (
     createStoryController,
     getStoriesBySprintController,
     updateStateController,
+    updateStoryController,
 )
 from wrappers import token_required
 
@@ -25,3 +26,9 @@ def getStoriesBySprint():
 @token_required
 def updateState():
     return updateStateController()
+
+
+@storyRoute.route("/update/<storyId>", methods=["PUT"])
+@token_required
+def update(storyId):
+    return updateStoryController(storyId)

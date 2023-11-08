@@ -59,3 +59,9 @@ def updateStoriesService(params):
             }
         },
     )
+
+
+def updateStoryService(storyId, story):
+    db = get_db()
+
+    db.story.update_one({"_id": ObjectId(storyId)}, {"$set": story})
