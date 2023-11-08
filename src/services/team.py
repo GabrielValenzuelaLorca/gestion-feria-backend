@@ -55,3 +55,13 @@ def getNotEvaluatedTeamsService(team_ids):
     cleanIds(teams)
 
     return teams
+
+
+def getTeamMembersService(members):
+    db = get_db()
+
+    members = list(map(lambda x: ObjectId(x), members))
+    members = list(db.user.find({"_id": {"$in": members}}))
+    members = list(map(lambda x: {"id": str(x["_id"]), "name": x["name"]}, members))
+
+    return members

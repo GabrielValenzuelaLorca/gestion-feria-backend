@@ -1,5 +1,8 @@
 from flask import Blueprint
-from controllers.team import createController, updateController
+from controllers.team import (
+    createController,
+    updateController,
+)
 from wrappers import token_required
 
 teamRoute = Blueprint("team", __name__, url_prefix="/team")

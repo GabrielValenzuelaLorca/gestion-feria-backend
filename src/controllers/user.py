@@ -10,7 +10,6 @@ from services.user import (
     getAllUsersService,
     updateUserService,
 )
-from utils.functions import cleanIds
 
 
 def registerController():
@@ -23,7 +22,7 @@ def registerController():
         "password": generate_password_hash(request.json["password"]),
         "rol": "Alumno",
         "team": {},
-        "period": activePeriod["id"]
+        "period": activePeriod["id"],
     }
 
     user = registerUserService(user)
@@ -52,7 +51,8 @@ def loginController():
         del user["password"]
 
         return {"data": user}
-    
+
+
 def getUserController(id):
     try:
         user = getUserByIdService(id)
@@ -60,6 +60,7 @@ def getUserController(id):
         return {"data": user}
     except RuntimeError as e:
         return "Usuario no encontrado", status.HTTP_404_NOT_FOUND
+
 
 def getAllController():
     activePeriod = findActivePeriodService()
@@ -73,8 +74,7 @@ def getAllController():
     if active:
         query["period"] = activePeriod["id"]
 
-    users = list(getAllUsersService(query))
-    cleanIds(users)
+    users = getAllUsersService(query)
 
     return {"data": users}
 

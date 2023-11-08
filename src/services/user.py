@@ -1,6 +1,8 @@
 from app import get_db
 from bson.objectid import ObjectId
 
+from utils.functions import cleanIds
+
 
 def registerUserService(user):
     db = get_db()
@@ -28,7 +30,9 @@ def getUserByIdService(id):
 def getAllUsersService(query):
     db = get_db()
 
-    return db.user.find(query, {"password": False})
+    users = list(db.user.find(query, {"password": False}))
+    cleanIds(users)
+    return users
 
 
 def updateUserService(user):
