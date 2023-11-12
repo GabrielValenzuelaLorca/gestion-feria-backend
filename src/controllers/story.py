@@ -32,7 +32,7 @@ def createStoryController():
         "points": 0,
         "criticality": "Opcional",
         "sprint": "Backlog",
-        "criteria": "",
+        "criteria": [""],
         "responsables": [],
         "index": findHigherIndex("Backlog", "Por Hacer", story["team_id"]) + 1,
     }
