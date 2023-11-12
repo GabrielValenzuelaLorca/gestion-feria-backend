@@ -19,6 +19,8 @@ def registerController():
     user = {
         "email": request.json["email"],
         "name": request.json["name"],
+        "lastName": request.json["lastName"],
+        "campus": request.json["campus"],
         "password": generate_password_hash(request.json["password"]),
         "rol": "Alumno",
         "team": {},
