@@ -48,8 +48,6 @@ def getStoriesBySprintController():
 
     if teamId is None:
         return errorMessage("teamId")
-    if sprint is None:
-        return errorMessage("sprint")
 
     stories = getStoriesBySprintService(teamId, sprint)
 
@@ -86,6 +84,8 @@ def updateStoryController(storyId):
     if "criticality" not in story:
         return errorMessage("criticality")
 
+    story["progress"] = int(story["progress"])
+    story["points"] = int(story["points"])
     updateStoryService(storyId, story)
 
     return {"data": story}

@@ -1,6 +1,8 @@
 from flask import Blueprint
 from controllers.team import (
     createController,
+    dashboardController,
+    getTeamController,
     updateController,
 )
 from wrappers import token_required
@@ -18,3 +20,15 @@ def create():
 @token_required
 def update():
     return updateController()
+
+
+@teamRoute.route("/dashboard", methods=["GET"])
+@token_required
+def dashboard():
+    return dashboardController()
+
+
+@teamRoute.route("/<teamId>", methods=["GET"])
+@token_required
+def getTeam(teamId):
+    return getTeamController(teamId)

@@ -1,3 +1,5 @@
+from datetime import datetime
+from pytz import timezone
 from flask import request
 from flask_api import status
 from services.activity import (
@@ -46,6 +48,23 @@ def getActivityController(activity_id):
 
 
 def getAppActivitiesController():
+    tz = timezone("America/Santiago")
+    currentDate = datetime.now(tz)
+
+    def getDateTime(date, time="T23:59"):
+        return tz.localize(datetime.strptime(date + time, "%Y/%m/%dT%H:%M"))
+
     activities = getAppActivitiesService()
+
+    activities = list(
+        filter(
+            lambda activity: getDateTime(activity["start"], "T00:00") <= currentDate
+            and (
+                getDateTime(activity["end"]) >= currentDate
+                or (activity["delay"] and getDateTime(activity["close"]) >= currentDate)
+            ),
+            activities,
+        )
+    )
 
     return {"data": activities}

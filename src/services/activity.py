@@ -48,7 +48,6 @@ def getPendingActivities(deliverable_ids):
             {
                 "_id": {"$nin": deliverable_ids},
                 "period": activePeriod["id"],
-                "type": {"$ne": "Presentación"},
             }
         )
     )
@@ -59,6 +58,7 @@ def getPendingActivities(deliverable_ids):
 
 def getAppActivitiesService():
     db = get_db()
+
     activePeriod = findActivePeriodService()
     activities = list(
         db.activity.find(
@@ -68,13 +68,14 @@ def getAppActivitiesService():
                     "$in": [
                         "storyCreation",
                         "storyEdition",
-                        "storyAssignation",
+                        "storyAssign",
                         "sprint",
                     ]
                 },
             }
         )
     )
+
     cleanIds(activities)
 
     return activities

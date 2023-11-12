@@ -65,3 +65,19 @@ def getTeamMembersService(members):
     members = list(map(lambda x: {"id": str(x["_id"]), "name": x["name"]}, members))
 
     return members
+
+
+def getAllTeamsService():
+    db = get_db()
+
+    activePeriod = findActivePeriodService()
+    teams = list(
+        db.team.find(
+            {
+                "period": activePeriod["id"],
+            }
+        )
+    )
+
+    cleanIds(teams)
+    return teams

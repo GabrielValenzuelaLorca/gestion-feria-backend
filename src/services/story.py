@@ -30,7 +30,11 @@ def findHigherIndex(sprint, state, team_id):
 def getStoriesBySprintService(teamId, sprint):
     db = get_db()
 
-    stories = list(db.story.find({"team_id": teamId, "sprint": sprint}))
+    filter = {"team_id": teamId}
+    if sprint:
+        filter["sprint"] = sprint
+
+    stories = list(db.story.find(filter))
     cleanIds(stories)
 
     return stories

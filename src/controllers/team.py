@@ -2,8 +2,10 @@ from flask import request, g
 from flask_api import status
 from services.period import findActivePeriodService
 from services.project import createProjectService
+from services.story import getStoriesBySprintService
 from services.team import (
     createTeamService,
+    getAllTeamsService,
     getTeamMembersService,
     updateTeamService,
     getTeamByIdService,
@@ -66,3 +68,28 @@ def updateController():
     user = getUserByIdService(g.user["_id"])
 
     return {"data": user}
+
+
+def dashboardController():
+    def mapCallback(team):
+        team["progress"] = {}
+        teamProgress = {"total": []}
+        stories = getStoriesBySprintService(team["id"], None)
+        for story in stories:
+            if story["sprint"] not in teamProgress:
+                teamProgress[story["sprint"]] = []
+            teamProgress[story["sprint"]].append(story["progress"])
+            if story["criticality"] != "Opcional" or story["sprint"] != "Backlog":
+                teamProgress["total"].append(story["progress"])
+        print(teamProgress)
+        for sprint, progress in teamProgress.items():
+            team["progress"][sprint] = sum(progress) / max(len(progress), 1)
+        return team
+
+    teams = getAllTeamsService()
+    teams = list(map(mapCallback, teams))
+    return {"data": teams}
+
+
+def getTeamController(teamId):
+    return {"data": getTeamByIdService(teamId)}
