@@ -1,7 +1,6 @@
 from flask import request, g
 from flask_api import status
 from services.period import findActivePeriodService
-from services.project import createProjectService
 from services.story import getStoriesBySprintService
 from services.team import (
     createTeamService,
@@ -19,18 +18,15 @@ def createController():
     if activePeriod is None:
         return "No existe periodo activo", status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    project = createProjectService(
-        {
-            "name": None,
-            "description": None,
-            "email": None,
-            "facebook": None,
-            "instagram": None,
-            "youtube": None,
-            "webpage": None,
-        }
-    )
-    project["id"] = str(project.pop("_id"))
+    project = {
+        "name": None,
+        "description": None,
+        "email": None,
+        "facebook": None,
+        "instagram": None,
+        "youtube": None,
+        "webpage": None,
+    }
 
     team = request.json
     team["linkedin"] = None
@@ -59,7 +55,6 @@ def updateController():
     newMembers = team["members"]
     deleteMembers = list(oldMembers - set(newMembers))
     team["members"] = getTeamMembersService(newMembers)
-    team["project"] = oldTeam["project"]
 
     team = updateTeamService(team)
 

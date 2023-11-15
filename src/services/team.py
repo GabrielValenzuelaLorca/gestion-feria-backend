@@ -63,7 +63,16 @@ def getTeamMembersService(members):
 
     members = list(map(lambda x: ObjectId(x), members))
     members = list(db.user.find({"_id": {"$in": members}}))
-    members = list(map(lambda x: {"id": str(x["_id"]), "name": x["name"]}, members))
+    members = list(
+        map(
+            lambda x: {
+                "id": str(x["_id"]),
+                "name": x["name"],
+                "lastName": x["lastName"],
+            },
+            members,
+        )
+    )
 
     return members
 

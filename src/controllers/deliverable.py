@@ -10,6 +10,7 @@ from services.deliverable import (
     newDeliverableService,
 )
 from services.activity import getActivityService, getPendingActivities
+from services.story import getStoriesBySprintService
 from services.team import getNotEvaluatedTeamsService, getTeamByIdService
 
 tz = timezone("America/Santiago")
@@ -20,15 +21,32 @@ def getDateTime(date):
     return tz.localize(datetime.strptime(date + "T23:59", format))
 
 
+def getSprintEvaluation(activity, teamId):
+    details = {}
+    evaluators = {}
+    stories = getStoriesBySprintService(teamId, activity["name"])
+    for evaluator in activity["evaluators"]:
+        evaluators[evaluator] = {"score": 0, "feedback": ""}
+    for story in stories:
+        details[story["id"]] = []
+        for _ in story["criteria"]:
+            details[story["id"]].append(evaluators)
+    return {"score": 0, "feedback": "", "stories": details}
+
+
 def newDeliverableController(activity_id):
     currentDate = datetime.now(tz)
     activity = getActivityService(activity_id)
     endDate = getDateTime(activity["end"])
+
     deliverable = {
         "activity": activity,
         "date": datetime.strftime(currentDate, format + ".%z"),
         "team": g.user["team"]["id"],
     }
+
+    if activity["type"] == "sprint":
+        deliverable["evaluation"] = getSprintEvaluation(activity, g.user["team"]["id"])
 
     if currentDate > endDate:
         if activity["delay"] and currentDate < getDateTime(activity["close"]):

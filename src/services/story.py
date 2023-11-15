@@ -64,6 +64,8 @@ def updateStoriesService(params):
         },
     )
 
+    return params["story"]
+
 
 def updateStoryService(storyId, story):
     db = get_db()

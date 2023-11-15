@@ -63,8 +63,8 @@ def updateStateController():
     if "story" not in params:
         return errorMessage("story")
 
-    updateStoriesService(params)
-    return {"data": params}
+    story = updateStoriesService(params)
+    return {"data": story}
 
 
 def updateStoryController(storyId):
