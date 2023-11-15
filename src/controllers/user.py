@@ -1,3 +1,4 @@
+import json
 from app import encode_auth_token
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -67,14 +68,18 @@ def getUserController(id):
 def getAllController():
     activePeriod = findActivePeriodService()
     query = {}
-    rol = request.args.get("rol")
+    roles = request.args.get("roles")
     active = request.args.get("active")
+    campus = request.args.get("campus")
 
-    if rol is not None:
-        query["rol"] = rol
+    if roles is not None:
+        query["rol"] = {"$in": json.loads(roles)}
 
     if active:
         query["period"] = activePeriod["id"]
+
+    if campus is not None and campus != "all":
+        query["campus"] = campus
 
     users = getAllUsersService(query)
 

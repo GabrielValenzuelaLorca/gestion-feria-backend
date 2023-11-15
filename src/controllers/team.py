@@ -36,6 +36,7 @@ def createController():
     team["linkedin"] = None
     team["project"] = project
     team["period"] = activePeriod["id"]
+    team["campus"] = g.user["campus"]
 
     membersIds = team["members"]
     members = getTeamMembersService(membersIds)
@@ -86,7 +87,12 @@ def dashboardController():
             team["progress"][sprint] = sum(progress) / max(len(progress), 1)
         return team
 
-    teams = getAllTeamsService()
+    activePeriod = findActivePeriodService()
+
+    query = {"period": activePeriod["id"]}
+    if g.user["campus"] != "all":
+        query["campus"] = g.user["campus"]
+    teams = getAllTeamsService(query)
     teams = list(map(mapCallback, teams))
     return {"data": teams}
 

@@ -1,12 +1,12 @@
 from app import get_db
 from bson.objectid import ObjectId
+from flask import g
 from utils.functions import cleanIds
 from services.period import findActivePeriodService
 
 
 def newActivityService(activity):
     db = get_db()
-    activity["close"] = activity["close"] if activity["close"] != "" else None
     db.activity.insert_one(activity)
     activity["id"] = str(activity.pop("_id"))
 
@@ -33,13 +33,16 @@ def getActivityService(activity_id):
 def getActivitiesService():
     db = get_db()
     activePeriod = findActivePeriodService()
-    activities = list(db.activity.find({"period": activePeriod["id"]}))
+    query = {"period": activePeriod["id"]}
+    if g.user["campus"] != "all":
+        query["campus"] = {"$in": [g.user["campus"], "all"]}
+    activities = list(db.activity.find(query))
     cleanIds(activities)
 
     return activities
 
 
-def getPendingActivities(deliverable_ids):
+def getPendingActivities(deliverable_ids, campus):
     db = get_db()
     deliverable_ids = list(map(lambda x: ObjectId(x), deliverable_ids))
     activePeriod = findActivePeriodService()
@@ -48,6 +51,7 @@ def getPendingActivities(deliverable_ids):
             {
                 "_id": {"$nin": deliverable_ids},
                 "period": activePeriod["id"],
+                "campus": {"$in": [campus, "all"]},
             }
         )
     )
@@ -60,21 +64,20 @@ def getAppActivitiesService():
     db = get_db()
 
     activePeriod = findActivePeriodService()
-    activities = list(
-        db.activity.find(
-            {
-                "period": activePeriod["id"],
-                "type": {
-                    "$in": [
-                        "storyCreation",
-                        "storyEdition",
-                        "storyAssign",
-                        "sprint",
-                    ]
-                },
-            }
-        )
-    )
+    query = {
+        "period": activePeriod["id"],
+        "type": {
+            "$in": [
+                "storyCreation",
+                "storyEdition",
+                "storyAssign",
+                "sprint",
+            ]
+        },
+    }
+    if g.user["campus"] != "all":
+        query["campus"] = {"$in": [g.user["campus"], "all"]}
+    activities = list(db.activity.find(query))
 
     cleanIds(activities)
 

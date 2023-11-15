@@ -36,5 +36,6 @@ def getActivity(activity_id):
 
 
 @activityRoute.route("/getAppActivities", methods=["GET"])
+@token_required
 def getAppActivities():
     return getAppActivitiesController()

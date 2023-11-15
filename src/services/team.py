@@ -40,7 +40,7 @@ def updateTeamService(team):
     return team
 
 
-def getNotEvaluatedTeamsService(team_ids):
+def getNotEvaluatedTeamsService(team_ids, campus):
     db = get_db()
     team_ids = list(map(lambda x: ObjectId(x), team_ids))
     activePeriod = findActivePeriodService()
@@ -49,6 +49,7 @@ def getNotEvaluatedTeamsService(team_ids):
             {
                 "_id": {"$nin": team_ids},
                 "period": activePeriod["id"],
+                "campus": {"$in": [campus, "all"]},
             }
         )
     )
@@ -67,13 +68,15 @@ def getTeamMembersService(members):
     return members
 
 
-def getAllTeamsService():
+def getAllTeamsService(query):
     db = get_db()
 
     activePeriod = findActivePeriodService()
+
     teams = list(
         db.team.find(
             {
+                **query,
                 "period": activePeriod["id"],
             }
         )

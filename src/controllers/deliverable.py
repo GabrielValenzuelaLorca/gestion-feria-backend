@@ -50,6 +50,7 @@ def getDeliverableByIdController(deliverable_id):
 
 
 def getDeliverablesByTeamController(team_id):
+    team = getTeamByIdService(team_id)
     currentDate = datetime.now(tz)
 
     def activityParser(activity):
@@ -69,7 +70,7 @@ def getDeliverablesByTeamController(team_id):
 
     deliverableIds = list(map(lambda x: x["activity"]["id"], deliverables))
 
-    activities = getPendingActivities(deliverableIds)
+    activities = getPendingActivities(deliverableIds, team["campus"])
 
     deliverablesAsActivities = list(
         map(
@@ -116,7 +117,7 @@ def getDeliverablesByActivity(activity_id):
 
     deliveredTeams = list(map(lambda x: x["team"], deliverables))
 
-    notEvaluatedTeams = getNotEvaluatedTeamsService(deliveredTeams)
+    notEvaluatedTeams = getNotEvaluatedTeamsService(deliveredTeams, activity["campus"])
     notEvaluatedTeams = list(
         map(
             lambda x: {
