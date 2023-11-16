@@ -1,4 +1,5 @@
 from datetime import datetime
+from json import dumps
 from pytz import timezone
 from flask import g, request
 from flask_api import status
@@ -12,6 +13,7 @@ from services.deliverable import (
 from services.activity import getActivityService, getPendingActivities
 from services.story import getStoriesBySprintService
 from services.team import getNotEvaluatedTeamsService, getTeamByIdService
+from services.user import getUserByIdService
 
 tz = timezone("America/Santiago")
 format = "%Y/%m/%dT%H:%M"
@@ -26,7 +28,8 @@ def getSprintEvaluation(activity, teamId):
     evaluators = {}
     stories = getStoriesBySprintService(teamId, activity["name"])
     for evaluator in activity["evaluators"]:
-        evaluators[evaluator] = {"score": 0, "feedback": ""}
+        user = getUserByIdService(evaluator)
+        evaluators[evaluator] = {"score": 0, "feedback": "", "rol": user["rol"]}
     for story in stories:
         details[story["id"]] = []
         for _ in story["criteria"]:
@@ -157,6 +160,52 @@ def getDeliverablesByActivity(activity_id):
 
 def evaluateController(deliverable_id):
     evaluation = request.json
-    evaluateService(deliverable_id, evaluation)
+    deliverable = getDeliverableByIdService(deliverable_id)
+    if deliverable["activity"]["type"] != "sprint":
+        evaluateService(deliverable_id, evaluation)
+    else:
+        storiesScores = []
+        totalPoints = 0
+
+        for storyId, criterias in deliverable["evaluation"]["stories"].items():
+            for i, criteria in enumerate(criterias):
+                for evaluator, evaluationInstance in criteria.items():
+                    if evaluator != str(g.user["_id"]):
+                        evaluation["stories"][storyId][i][
+                            evaluator
+                        ] = evaluationInstance
+
+        stories = getStoriesBySprintService(
+            deliverable["team"], deliverable["activity"]["name"]
+        )
+
+        for story in stories:
+            totalPoints += story["points"]
+            profesorStoryScore = []
+            ayudanteStoryScore = []
+            for criteria in evaluation["stories"][story["id"]]:
+                for criteriaEvaluation in criteria.values():
+                    if criteriaEvaluation["rol"] == "Profesor":
+                        profesorStoryScore.append(criteriaEvaluation["score"])
+                    if criteriaEvaluation["rol"] == "Ayudante":
+                        ayudanteStoryScore.append(criteriaEvaluation["score"])
+            profesorMean = (
+                sum(profesorStoryScore) / len(profesorStoryScore)
+                if len(profesorStoryScore) > 0
+                else 4
+            ) * 0.7
+            ayudanteMean = (
+                sum(ayudanteStoryScore) / len(ayudanteStoryScore)
+                if len(ayudanteStoryScore) > 0
+                else 4
+            ) * 0.3
+            factor = (profesorMean + ayudanteMean) * story["points"]
+            storiesScores.append(factor)
+        if totalPoints > 0:
+            finalScore = round((sum(storiesScores) / totalPoints) / 4, 2) * 100
+        else:
+            finalScore = 0
+        evaluation["score"] = finalScore
+        evaluateService(deliverable_id, evaluation)
 
     return {"data": evaluation}
