@@ -202,7 +202,7 @@ def evaluateController(deliverable_id):
             factor = (profesorMean + ayudanteMean) * story["points"]
             storiesScores.append(factor)
         if totalPoints > 0:
-            finalScore = round((sum(storiesScores) / totalPoints) / 4, 2) * 100
+            finalScore = round((sum(storiesScores) / totalPoints) * 100 / 4, 0)
         else:
             finalScore = 0
         evaluation["score"] = finalScore
