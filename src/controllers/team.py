@@ -67,19 +67,34 @@ def updateController():
 
 
 def dashboardController():
+    def sumProgressPonderedWithPoints(stories):
+        total = 0
+        for story in stories:
+            total += story["progress"] * story["points"]
+        return total
+
     def mapCallback(team):
         team["progress"] = {}
-        teamProgress = {"total": []}
+        teamProgress = {"total": {"points": 0, "stories": []}}
         stories = getStoriesBySprintService(team["id"], None)
         for story in stories:
             if story["sprint"] not in teamProgress:
-                teamProgress[story["sprint"]] = []
-            teamProgress[story["sprint"]].append(story["progress"])
+                teamProgress[story["sprint"]] = {"points": 0, "stories": []}
+            teamProgress[story["sprint"]]["stories"].append(
+                {"progress": story["progress"], "points": story["points"]}
+            )
+            teamProgress[story["sprint"]]["points"] += story["points"]
             if story["criticality"] != "Opcional" or story["sprint"] != "Backlog":
-                teamProgress["total"].append(story["progress"])
+                teamProgress["total"]["stories"].append(
+                    {"progress": story["progress"], "points": story["points"]}
+                )
+                teamProgress["total"]["points"] += story["points"]
         print(teamProgress)
-        for sprint, progress in teamProgress.items():
-            team["progress"][sprint] = sum(progress) / max(len(progress), 1)
+        for sprint, info in teamProgress.items():
+            team["progress"][sprint] = round(
+                sumProgressPonderedWithPoints(info["stories"]) / max(info["points"], 1),
+                2,
+            )
         return team
 
     activePeriod = findActivePeriodService()
