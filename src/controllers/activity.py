@@ -1,6 +1,6 @@
 from datetime import datetime
 from pytz import timezone
-from flask import request
+from flask import g, request
 from flask_api import status
 from services.activity import (
     editActivityService,
@@ -8,6 +8,11 @@ from services.activity import (
     getAppActivitiesService,
     newActivityService,
     getActivitiesService,
+)
+from services.deliverable import (
+    getDeliverablesByActivityService,
+    getDeliverablesByTeamService,
+    updateDeliverablesService,
 )
 from services.period import findActivePeriodService
 
@@ -30,6 +35,8 @@ def newActivityController():
 def editActivityController():
     activity = request.json
     activity = editActivityService(activity)
+
+    updateDeliverablesService({"activity.id": activity["id"]}, {"activity": activity})
 
     return {"data": activity}
 
@@ -57,13 +64,21 @@ def getAppActivitiesController():
 
     activities = getAppActivitiesService()
 
+    deliverables = (
+        getDeliverablesByTeamService(g.user["team"]["id"])
+        if "id" in g.user["team"]
+        else []
+    )
+    deliverables = list(map(lambda x: x["activity"]["id"], deliverables))
+
     activities = list(
         filter(
             lambda activity: getDateTime(activity["start"], "T00:00") <= currentDate
             and (
                 getDateTime(activity["end"]) >= currentDate
                 or (activity["delay"] and getDateTime(activity["close"]) >= currentDate)
-            ),
+            )
+            and activity["id"] not in deliverables,
             activities,
         )
     )
