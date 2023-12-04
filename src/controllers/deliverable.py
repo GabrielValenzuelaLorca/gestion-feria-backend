@@ -1,5 +1,6 @@
+import os
 from datetime import datetime
-from json import dumps
+from dotenv import load_dotenv
 from pytz import timezone
 from flask import g, request
 from flask_api import status
@@ -14,6 +15,7 @@ from services.activity import getActivityService, getPendingActivities
 from services.story import getStoriesBySprintService
 from services.team import getNotEvaluatedTeamsService, getTeamByIdService
 from services.user import getUserByIdService
+from utils.functions import errorMessage, saveLocalFile
 
 tz = timezone("America/Santiago")
 format = "%Y/%m/%dT%H:%M"
@@ -38,8 +40,17 @@ def getSprintEvaluation(activity, teamId):
 
 
 def newDeliverableController(activity_id):
-    currentDate = datetime.now(tz)
     activity = getActivityService(activity_id)
+
+    if "file" not in request.files and activity["type"] == "document":
+        return errorMessage("file")
+    elif "file" in request.files and activity["type"] == "document":
+        file = request.files["file"]
+        if file.filename == "":
+            return errorMessage("file")
+        if os.environ.get("FLASK_ENV") == "development":
+            saveLocalFile(file, "deliverables")
+    currentDate = datetime.now(tz)
     endDate = getDateTime(activity["end"])
 
     deliverable = {
