@@ -1,1 +1,1 @@
-FLASK_APP=src/app
+FLASK_APP=app
