@@ -1,5 +1,4 @@
 import jwt
-import os
 from flask import Flask, g
 from flask_pymongo import PyMongo
 from flask import current_app
@@ -10,9 +9,7 @@ from datetime import datetime, timedelta
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     CORS(app)
-    app.config.from_mapping(
-        SECRET_KEY=os.environ.get("SECRET_KEY"), MONGO_URI=os.environ.get("MONGO_URI")
-    )
+    app.config.from_pyfile("../settings.py")
 
     from routes import bp
 
