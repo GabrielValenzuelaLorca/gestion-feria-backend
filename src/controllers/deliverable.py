@@ -1,4 +1,5 @@
 import os
+import boto3
 from datetime import datetime
 from dotenv import load_dotenv
 from pytz import timezone
@@ -50,6 +51,9 @@ def newDeliverableController(activity_id):
             return errorMessage("file")
         if os.environ.get("FLASK_ENV") == "development":
             saveLocalFile(file, "deliverables")
+        elif os.environ.get("FLASK_ENV") == "production":
+            s3 = boto3.resource("s3")
+            s3.Bucket("case-di-bucket").put_object(Key=file.filename, Body=file)
     currentDate = datetime.now(tz)
     endDate = getDateTime(activity["end"])
 
