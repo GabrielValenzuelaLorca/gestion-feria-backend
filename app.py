@@ -4,11 +4,13 @@ from flask_pymongo import PyMongo
 from flask import current_app
 from flask_cors import CORS
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
 
 
 def create_app(test_config=None):
     app = Flask(__name__)
     CORS(app)
+    load_dotenv()
     app.config.from_pyfile("settings.py")
 
     from src.routes import bp
