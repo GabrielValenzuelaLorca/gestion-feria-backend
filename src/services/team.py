@@ -1,8 +1,8 @@
 from app import get_db
 from bson.objectid import ObjectId
 
-from services.period import findActivePeriodService
-from utils.functions import cleanIds
+from src.services.period import findActivePeriodService
+from src.utils.functions import cleanIds
 
 
 def getTeamByIdService(id):

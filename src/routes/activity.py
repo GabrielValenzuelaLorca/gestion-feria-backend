@@ -1,12 +1,12 @@
 from flask import Blueprint
-from controllers.activity import (
+from src.controllers.activity import (
     getActivityController,
     getAppActivitiesController,
     newActivityController,
     editActivityController,
     getActivitiesController,
 )
-from wrappers import token_required
+from src.wrappers import token_required
 
 activityRoute = Blueprint("activity", __name__, url_prefix="/activity")
 

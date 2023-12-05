@@ -1,12 +1,12 @@
 from flask import Blueprint
-from controllers.deliverable import (
+from src.controllers.deliverable import (
     evaluateController,
     getDeliverableByIdController,
     getDeliverablesByActivity,
     getDeliverablesByTeamController,
     newDeliverableController,
 )
-from wrappers import token_required
+from src.wrappers import token_required
 
 deliverableRoute = Blueprint("deliverable", __name__, url_prefix="/deliverable")
 

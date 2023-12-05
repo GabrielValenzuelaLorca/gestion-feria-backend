@@ -1,11 +1,11 @@
 from flask import Blueprint
-from controllers.team import (
+from src.controllers.team import (
     createController,
     dashboardController,
     getTeamController,
     updateController,
 )
-from wrappers import token_required
+from src.wrappers import token_required
 
 teamRoute = Blueprint("team", __name__, url_prefix="/team")
 

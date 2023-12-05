@@ -1,6 +1,6 @@
 from flask import Blueprint
-from controllers.rubric import createAndUpdateRubricController
-from wrappers import token_required
+from src.controllers.rubric import createAndUpdateRubricController
+from src.wrappers import token_required
 
 rubricRoute = Blueprint("rubric", __name__, url_prefix="/rubric")
 

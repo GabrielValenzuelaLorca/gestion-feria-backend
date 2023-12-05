@@ -3,8 +3,8 @@ from app import encode_auth_token
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_api import status
-from services.period import findActivePeriodService
-from services.user import (
+from src.services.period import findActivePeriodService
+from src.services.user import (
     getUserByIdService,
     loginService,
     registerUserService,

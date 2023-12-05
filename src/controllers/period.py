@@ -1,5 +1,9 @@
 from flask import request
-from services.period import findActivePeriodService, createPeriodService, updatePeriodService
+from src.services.period import (
+    findActivePeriodService,
+    createPeriodService,
+    updatePeriodService,
+)
 
 
 def createPeriodController():
@@ -19,9 +23,8 @@ def createPeriodController():
 
     return {"data": period}
 
+
 def getActivePeriodController():
     activePeriod = findActivePeriodService()
 
-    return {
-        "data": activePeriod
-    }
+    return {"data": activePeriod}

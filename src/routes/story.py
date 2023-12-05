@@ -1,11 +1,11 @@
 from flask import Blueprint
-from controllers.story import (
+from src.controllers.story import (
     createStoryController,
     getStoriesBySprintController,
     updateStateController,
     updateStoryController,
 )
-from wrappers import token_required
+from src.wrappers import token_required
 
 storyRoute = Blueprint("story", __name__, url_prefix="/story")
 

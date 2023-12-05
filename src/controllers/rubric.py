@@ -1,6 +1,6 @@
 from flask import request
-from services.activity import editActivityService
-from services.deliverable import updateDeliverablesService
+from src.services.activity import editActivityService
+from src.services.deliverable import updateDeliverablesService
 
 
 def createAndUpdateRubricController(activity_id):

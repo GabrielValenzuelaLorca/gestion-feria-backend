@@ -1,15 +1,15 @@
 from flask import request, g
 from flask_api import status
-from services.period import findActivePeriodService
-from services.story import getStoriesBySprintService
-from services.team import (
+from src.services.period import findActivePeriodService
+from src.services.story import getStoriesBySprintService
+from src.services.team import (
     createTeamService,
     getAllTeamsService,
     getTeamMembersService,
     updateTeamService,
     getTeamByIdService,
 )
-from services.user import getUserByIdService, updateManyUsersService
+from src.services.user import getUserByIdService, updateManyUsersService
 
 
 def createController():

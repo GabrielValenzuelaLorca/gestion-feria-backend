@@ -1,12 +1,12 @@
 from flask import Blueprint
-from controllers.user import (
+from src.controllers.user import (
     getUserController,
     loginController,
     registerController,
     getAllController,
     updateController,
 )
-from wrappers import token_required
+from src.wrappers import token_required
 
 userRoute = Blueprint("user", __name__, url_prefix="/user")
 
@@ -19,6 +19,7 @@ def register():
 @userRoute.route("/login", methods=["POST"])
 def login():
     return loginController()
+
 
 @userRoute.route("/<id>", methods=["GET"])
 def getUser(id):

@@ -7,11 +7,11 @@ from datetime import datetime, timedelta
 
 
 def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
     CORS(app)
-    app.config.from_pyfile("../settings.py")
+    app.config.from_pyfile("settings.py")
 
-    from routes import bp
+    from src.routes import bp
 
     app.register_blueprint(bp)
 

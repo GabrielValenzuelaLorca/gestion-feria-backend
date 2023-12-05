@@ -2,19 +2,18 @@ from datetime import datetime
 from pytz import timezone
 from flask import g, request
 from flask_api import status
-from services.activity import (
+from src.services.activity import (
     editActivityService,
     getActivityService,
     getAppActivitiesService,
     newActivityService,
     getActivitiesService,
 )
-from services.deliverable import (
-    getDeliverablesByActivityService,
+from src.services.deliverable import (
     getDeliverablesByTeamService,
     updateDeliverablesService,
 )
-from services.period import findActivePeriodService
+from src.services.period import findActivePeriodService
 
 
 def newActivityController():

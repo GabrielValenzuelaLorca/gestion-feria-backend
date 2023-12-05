@@ -1,6 +1,6 @@
 from app import get_db
 from bson.objectid import ObjectId
-from utils.functions import cleanIds
+from src.utils.functions import cleanIds
 
 
 def newDeliverableService(deliverable):

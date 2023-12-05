@@ -1,6 +1,6 @@
 from flask import Blueprint
-from controllers.period import createPeriodController, getActivePeriodController
-from wrappers import token_required
+from src.controllers.period import createPeriodController, getActivePeriodController
+from src.wrappers import token_required
 
 periodRoute = Blueprint("period", __name__, url_prefix="/period")
 

@@ -1,6 +1,6 @@
 from flask import request
 from flask_api import status
-from services.story import (
+from src.services.story import (
     createStoryService,
     findHigherIndex,
     getStoriesBySprintService,

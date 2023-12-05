@@ -1,8 +1,8 @@
 from app import get_db
 from bson.objectid import ObjectId
 from flask import g
-from utils.functions import cleanIds
-from services.period import findActivePeriodService
+from src.utils.functions import cleanIds
+from src.services.period import findActivePeriodService
 
 
 def newActivityService(activity):
