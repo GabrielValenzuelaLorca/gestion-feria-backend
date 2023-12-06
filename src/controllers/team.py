@@ -29,7 +29,6 @@ def createController():
     }
 
     team = request.json
-    team["linkedin"] = None
     team["project"] = project
     team["period"] = activePeriod["id"]
     team["campus"] = g.user["campus"]
