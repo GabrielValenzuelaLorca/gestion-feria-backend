@@ -120,6 +120,7 @@ def getDeliverablesByTeamController(team_id):
                 "deliverable_id": x["id"],
                 **x["activity"],
                 "state": x["state"],
+                "delayed": x["delayed"],
                 "send_date": x["date"],
             },
             deliverables,
