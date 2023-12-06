@@ -60,6 +60,7 @@ def newDeliverableController(activity_id):
         "activity": activity,
         "date": datetime.strftime(currentDate, format + ".%z"),
         "team": g.user["team"]["id"],
+        "state": "done",
     }
 
     if activity["type"] == "sprint":
@@ -67,13 +68,13 @@ def newDeliverableController(activity_id):
 
     if currentDate > endDate:
         if activity["delay"] and currentDate < getDateTime(activity["close"]):
-            state = "done_delayed"
+            delayed = True
         else:
             return "Envío cerrado", status.HTTP_500_INTERNAL_SERVER_ERROR
     else:
-        state = "done"
+        delayed = False
 
-    deliverable["state"] = state
+    deliverable["delayed"] = delayed
     deliverable = newDeliverableService(deliverable)
 
     return {"data": deliverable}
@@ -91,15 +92,21 @@ def getDeliverablesByTeamController(team_id):
     def activityParser(activity):
         endDate = getDateTime(activity["end"])
 
+        state = "pending"
+        delayed = False
         if currentDate > endDate:
             if activity["delay"] and currentDate < getDateTime(activity["close"]):
-                state = "pending_delayed"
+                delayed = True
             else:
                 state = "closed"
-        else:
-            state = "pending"
 
-        return {**activity, "state": state, "send_date": None, "deliverable_id": None}
+        return {
+            **activity,
+            "state": state,
+            "delayed": delayed,
+            "send_date": None,
+            "deliverable_id": None,
+        }
 
     deliverables = getDeliverablesByTeamService(team_id)
 
@@ -134,13 +141,13 @@ def getDeliverablesByActivity(activity_id):
     activity = getActivityService(activity_id)
     endDate = getDateTime(activity["end"])
 
+    newState = "pending"
+    delayed = False
     if currentDate > endDate:
         if activity["delay"] and currentDate < getDateTime(activity["close"]):
-            newState = "pending_delayed"
+            delayed = True
         else:
             newState = "closed"
-    else:
-        newState = "pending"
 
     deliverables = getDeliverablesByActivityService(activity_id)
     deliverablesWithTeam = list(
@@ -160,6 +167,7 @@ def getDeliverablesByActivity(activity_id):
                 "evaluation": None,
                 "date": None,
                 "state": newState,
+                "delayed": delayed,
                 "activity": activity,
             },
             notEvaluatedTeams,
