@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/gestion-feria
+      - SECRET_KEY=b'\x08(G\x19\x17\x04\xcc\xd5\x1fq\xcd\x04'
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+volumes:
+  mongo-data:
